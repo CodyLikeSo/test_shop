@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Интернет-магазин{% endblock %}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+        header { background: #333; color: white; padding: 1rem; display: flex; justify-content: space-between; }
+        nav a { color: white; margin-right: 1rem; text-decoration: none; }
+        .container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.5rem; }
+        .product-card { border: 1px solid #ddd; padding: 1rem; text-align: center; }
+        .categories { margin-bottom: 2rem; }
+        .categories a { display: block; padding: 0.5rem; text-decoration: none; color: #333; }
+        .categories a.active { background: #e0e0e0; font-weight: bold; }
+        .search-form { margin-bottom: 1rem; }
+        .cart-info { color: #ffcc00; }
+    </style>
+</head>
+<body>
+    <header>
+        <div>
+            <a href="{% url 'product:product_list' %}" style="color:white; font-weight:bold;">Магазин</a>
+        </div>
+        <div>
+            {% if user.is_authenticated %}
+                <span>Привет, {{ user.username }}!</span>
+                <a href="{% url 'cart:cart_detail' %}" class="cart-info">
+                    Корзина {% if cart_total_items %}({{ cart_total_items }}){% endif %}
+                </a>
+                <form method="post" action="{% url 'logout' %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" style="background:none; border:none; color:white; text-decoration:underline; cursor:pointer;">
+                        Выйти
+                    </button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}" style="color:white;">Войти</a>
+                <a href="{% url 'accounts:register' %}" style="color:white; margin-left:1rem;">Регистрация</a>
+            {% endif %}
+        </div>
+    </header>
+
+    <div class="container">
+        {% if messages %}
+            {% for message in messages %}
+                <div>{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        {% block content %}
+        {% endblock %}
+    </div>
+</body>
+</html>

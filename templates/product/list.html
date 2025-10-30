@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block title %}Каталог товаров{% endblock %}
+
+{% block content %}
+<div style="display: flex; gap: 2rem; margin-top: 1rem;">
+    <!-- Боковая панель с категориями -->
+    <aside style="width: 220px; flex-shrink: 0;">
+        <h2 style="font-size: 1.3rem; margin-bottom: 1rem;">Категории</h2>
+        <nav class="categories">
+            {% with active_style="display: block; padding: 0.6rem 0; text-decoration: none; color: #333; border-left: 3px solid #007bff;" default_style="display: block; padding: 0.6rem 0; text-decoration: none; color: #333; border-left: 3px solid transparent;" %}
+                <a href="{% url 'product:product_list' %}" style="{% if not selected_category %}{{ active_style }}{% else %}{{ default_style }}{% endif %}">
+                    Все товары
+                </a>
+                {% for cat in categories %}
+                    <a href="{% url 'product:product_list_by_category' cat.slug %}" style="{% if cat.slug == selected_category %}{{ active_style }}{% else %}{{ default_style }}{% endif %}">
+                        {{ cat.name }}
+                    </a>
+                {% endfor %}
+            {% endwith %}
+        </nav>
+    </aside>
+
+    <!-- Основной контент -->
+    <main style="flex: 1;">
+        <!-- Заголовок и поиск -->
+        <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+            <h1 style="margin: 0; font-size: 1.8rem;">Каталог товаров</h1>
+            <form method="get" style="display: flex; gap: 0.5rem;">
+                <input type="text"
+                       name="q"
+                       value="{{ search_query }}"
+                       placeholder="Поиск по товарам..."
+                       style="padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; min-width: 200px;">
+                <button type="submit" style="padding: 0.5rem 1rem; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                    Найти
+                </button>
+            </form>
+        </header>
+
+        <!-- Сетка товаров -->
+        {% if products %}
+            <div class="grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.5rem;">
+                {% for product in products %}
+                    <article class="product-card" style="border: 1px solid #eee; border-radius: 8px; padding: 1rem; background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                        {% if product.image %}
+                            <div style="height: 160px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; background: #fafafa;">
+                                <img src="{{ product.image.url }}"
+                                     alt="{{ product.name }}"
+                                     style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                            </div>
+                        {% else %}
+                            <div style="height: 160px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; background: #fafafa; color: #999; font-size: 0.9rem;">
+                                Изображение отсутствует
+                            </div>
+                        {% endif %}
+                        <h3 style="font-size: 1.1rem; margin: 0.5rem 0;">{{ product.name }}</h3>
+                        <p style="color: #e74c3c; font-weight: bold; font-size: 1.2rem; margin: 0.5rem 0;">
+                            {{ product.price|floatformat:2 }} ₽
+                        </p>
+                        <a href="{% url 'product:product_detail' product.pk %}"
+                           style="display: inline-block; margin-top: 0.8rem; padding: 0.4rem 0.8rem; background: #28a745; color: white; text-decoration: none; border-radius: 4px; font-size: 0.95rem;">
+                            Подробнее
+                        </a>
+                    </article>
+                {% endfor %}
+            </div>
+
+            <!-- Пагинация -->
+            {% if is_paginated %}
+                <nav aria-label="Пагинация" style="margin-top: 2.5rem; text-align: center;">
+                    <ul style="list-style: none; padding: 0; margin: 0; display: inline-flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center;">
+                        {% if page_obj.has_previous %}
+                            <li>
+                                <a href="?page=1{% if selected_category %}&category={{ selected_category }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}"
+                                   style="display: block; padding: 0.4rem 0.8rem; text-decoration: none; color: #007bff; border: 1px solid #ddd; border-radius: 4px;">Первая</a>
+                            </li>
+                            <li>
+                                <a href="?page={{ page_obj.previous_page_number }}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}"
+                                   style="display: block; padding: 0.4rem 0.8rem; text-decoration: none; color: #007bff; border: 1px solid #ddd; border-radius: 4px;">Предыдущая</a>
+                            </li>
+                        {% endif %}
+
+                        <li style="display: flex; align-items: center; padding: 0 0.8rem; color: #555;">
+                            Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
+                        </li>
+
+                        {% if page_obj.has_next %}
+                            <li>
+                                <a href="?page={{ page_obj.next_page_number }}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}"
+                                   style="display: block; padding: 0.4rem 0.8rem; text-decoration: none; color: #007bff; border: 1px solid #ddd; border-radius: 4px;">Следующая</a>
+                            </li>
+                            <li>
+                                <a href="?page={{ page_obj.paginator.num_pages }}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}"
+                                   style="display: block; padding: 0.4rem 0.8rem; text-decoration: none; color: #007bff; border: 1px solid #ddd; border-radius: 4px;">Последняя</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+        {% else %}
+            <div style="text-align: center; padding: 3rem; color: #666;">
+                <p style="font-size: 1.2rem;">Товары не найдены.</p>
+                <p>Попробуйте изменить фильтры или поиск.</p>
+            </div>
+        {% endif %}
+    </main>
+</div>
+{% endblock %}
