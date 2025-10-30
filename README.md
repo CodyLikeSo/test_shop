@@ -27,7 +27,6 @@ docker-compose exec web python manage.py collectstatic --noinput
 
 ```bash
 docker-compose exec web python manage.py createsuperuser
-# Далее создаем юзера
 ```
 
 ## Проходим на http://localhost:8000/admin и вводим те данные которые создали в команде выше(createsuperuser). Создаем категории и несколько товаров. Заходим на http://localhost:8000/ и проверяем. 
