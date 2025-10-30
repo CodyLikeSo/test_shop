@@ -1,0 +1,15 @@
+/products/
+
+.env
+
+__pycache__/
+*.pyc
+*.sqlite3
+
+
+.venv/
+.git
+
+# IDE
+.idea/
+.vscode/

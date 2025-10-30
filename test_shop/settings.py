@@ -1,16 +1,26 @@
 from pathlib import Path
 
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+
+MEDIA_URL = "/products/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "products")
+
+SECRET_KEY = "SECRET_KEY"
+DEBUG = True
 
 
 LOGOUT_REDIRECT_URL = "/"
 LOGIN_REDIRECT_URL = "/"
 
-SECRET_KEY = "django-insecure-#ew@g$nv!ew9fi!m!08=l(j_00i#klp3@5k3zny-@5g_amzp3y"
 
-DEBUG = True
+ALLOWED_HOSTS = ["*"]
 
-ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     "product",
@@ -56,12 +66,18 @@ TEMPLATES = [
 WSGI_APPLICATION = "test_shop.wsgi.application"
 
 
+# Database
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),  # ← должно быть 'db'
+        'PORT': '5432',  # ← жёстко 5432
     }
 }
+
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -79,6 +95,8 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+
+
 LANGUAGE_CODE = "en-us"
 
 TIME_ZONE = "UTC"
@@ -88,6 +106,12 @@ USE_I18N = True
 USE_TZ = True
 
 
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+

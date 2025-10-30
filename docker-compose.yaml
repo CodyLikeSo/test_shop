@@ -1,0 +1,37 @@
+# docker-compose.yml
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5435:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+      - products:/app/products        # ← сохраняет загруженные изображения
+      - staticfiles:/app/staticfiles  # ← сохраняет статику (админка)
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=${DEBUG}
+      - SECRET_KEY=${SECRET_KEY}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=5432  # ← ВНУТРИ Docker всегда 5432!
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:
+  products:        # ← volume для изображений
+  staticfiles:     # ← volume для статических файлов

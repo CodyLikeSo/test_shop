@@ -14,7 +14,7 @@ class Product(models.Model):
         verbose_name="category",
     )
     image = models.ImageField(
-        upload_to="products/%Y/%m/%d/", blank=True, null=True, verbose_name="image"
+        upload_to="%Y/%m/%d/", blank=True, null=True, verbose_name="image"
     )
 
     class Meta:

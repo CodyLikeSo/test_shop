@@ -1,6 +1,3 @@
-from django.shortcuts import render
-
-# Create your views here.
 from django.db.models import Q
 from django.views.generic import ListView, DetailView
 from category.models import Category
@@ -40,4 +37,4 @@ class ProductDetailView(DetailView):
     model = Product
     template_name = "product/detail.html"
     context_object_name = "product"
-    pk_url_kwarg = "pk"  # так как используем id
+    pk_url_kwarg = "pk"
